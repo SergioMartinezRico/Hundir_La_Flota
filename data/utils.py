@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import time
 
 #clases
 
@@ -45,7 +46,7 @@ class Tablero:
     def __init__(self, tamano=10):
         self.tamano = tamano
         self.tablero_juego = np.full((tamano, tamano), "_")   # tablero interno
-        self.tablero_mostrar = np.full((tamano, tamano), "_") # tablero que se muestra
+        self.tablero_mostrar = np.full((tamano, tamano), "⬜") # tablero que se muestra
         self.posiciones = []  # lista de todos los barcos
         self.libres = set()   # celdas alrededor de barcos
 
@@ -84,11 +85,15 @@ class Tablero:
                 for f, c in posiciones:
                     self.tablero_juego[f, c] = "B"
                     # marcar alrededor como libre
-                    for i in range(f-1, f+2):
-                        for j in range(c-1, c+2):
-                            if 0 <= i < self.tamano and 0 <= j < self.tamano:
-                                self.libres.add((i, j))
+                adyacentes = set()
+                for i in range(f-1, f+2):
+                    for j in range(c-1, c+2):
+                        if 0 <= i < self.tamano and 0 <= j < self.tamano:
+                            adyacentes.add((i, j))
+                self.libres.update(adyacentes)
                 colocado = True
+
+                
 
     #repite colocar con una lista de valores
     def colocar_flota(self, flota):
@@ -101,11 +106,11 @@ class Tablero:
         if fila < 0 or fila >= self.tamano or col < 0 or col >= self.tamano:
             return "fuera"
 
-        if self.tablero_mostrar[fila, col] != "_":
+        if self.tablero_mostrar[fila, col] != "⬜":
             return "repetido"
 
         if self.tablero_juego[fila, col] == "B":
-            self.tablero_mostrar[fila, col] = "X"
+            self.tablero_mostrar[fila, col] = "💥"
             for barco in self.posiciones:
                 if (fila, col) in barco.coordenadas:
                     barco.registrar_disparo()
@@ -114,7 +119,7 @@ class Tablero:
                     break
             return "tocado"
         else:
-            self.tablero_mostrar[fila, col] = "O"
+            self.tablero_mostrar[fila, col] = "🌊"
             return "agua"
 
    # comprobamos si todos estan hundidos
@@ -133,7 +138,7 @@ class Tablero:
         # Columna de números 
         col_numeros = np.array([[" 1"], [" 2"], [" 3"], [" 4"], [" 5"],[" 6"], [" 7"], [" 8"], [" 9"], ["10"]])
         # Fila de letras mas un hueco para cuadrar
-        fila_letras = np.array([["  ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]])
+        fila_letras = np.array([["  ", " A", " B", " C", " D", " E", " F", " G", " H", " I", " J"]])
         # Concatenar números a la izquierda
         tablero_numerado = np.hstack((col_numeros, tablero))
         # Concatenar letras arriba
@@ -191,7 +196,8 @@ def turno_jugador(tablero_enemigo):
         resultado = tablero_enemigo.disparar(fila, col)
         
         if resultado == "tocado":
-            print("Has tocado un barco!")
+            print("💥💥💥Has tocado un barco!💥💥💥")
+            time.sleep(1)
             tablero_enemigo.mostrar()
             # si todos los barcos del enemigo están hundidos, termina el juego
             if tablero_enemigo.todos_hundidos():
@@ -199,7 +205,8 @@ def turno_jugador(tablero_enemigo):
             # si no, el jugador sigue disparando
 
         elif resultado == "hundido":
-            print("Has hundido un barco!")
+            print("💥💥💥Has hundido un barco!💥💥💥")
+            time.sleep(1)
             tablero_enemigo.mostrar()
             # si todos los barcos del enemigo están hundidos, termina el juego
             if tablero_enemigo.todos_hundidos():
@@ -207,7 +214,8 @@ def turno_jugador(tablero_enemigo):
             # si no, el jugador sigue disparando
 
         elif resultado == "agua":
-            print("Has fallado. Agua.")
+            print("🌊🌊🌊Has fallado. Agua.🌊🌊🌊")
+            time.sleep(1)
             tablero_enemigo.mostrar()
             jugar = False  # termina el turno del jugador
 
@@ -234,7 +242,9 @@ def turno_enemigo(tablero_jugador):
         numero = fila + 1
 
         if resultado == "tocado":
-            print(f"el enemigo dispara a {numero}{letra}: Tocado!")
+            time.sleep(0.5)
+            print(f"💥💥💥el enemigo dispara a {numero}{letra}: Tocado!💥💥💥")
+            time.sleep(1)
             tablero_jugador.mostrar()
             # si todos los barcos del jugador están hundidos, termina el juego
             if tablero_jugador.todos_hundidos():
@@ -242,7 +252,8 @@ def turno_enemigo(tablero_jugador):
             # si no, el enemigo sigue disparando
         
         elif resultado == "hundido":
-            print("Has hundido un barco!")
+            print("💥💥💥Te han hundido un barco!💥💥💥")
+            time.sleep(1)
             tablero_jugador.mostrar()
             # si todos los barcos del enemigo están hundidos, termina el juego
             if tablero_jugador.todos_hundidos():
@@ -250,7 +261,9 @@ def turno_enemigo(tablero_jugador):
             # si no, el jugador sigue disparando
 
         elif resultado == "agua":
-            print(f"el enemigo dispara a {numero}{letra}: Agua.")
+            time.sleep(0.5)
+            print(f"🌊🌊🌊el enemigo dispara a {numero}{letra}: Agua.🌊🌊🌊")
+            time.sleep(2)
             tablero_jugador.mostrar()
             jugar = False  # termina el turno de el enemigo
 
@@ -285,13 +298,15 @@ def jugar_partida():
     print("Comienza la partida!\n")
 
     while jugando == True: #cuando jugando pase a ser false se acaba la partida
-        print("TABLERO DEL JUGADOR")
-        tablero_jugador.mostrar()
-        print("TABLERO DEL ENEMIGO")
-        tablero_enemigo.mostrar()
-
+        
         # Turno del jugador
+        print('\n' * 5)
         print("\nTu turno:")
+        print('\n' * 2)
+        print("TABLERO DEL ENEMIGO")
+        print('\n' * 2)
+        tablero_enemigo.mostrar()
+        time.sleep(1)
         estado = turno_jugador(tablero_enemigo)
         if estado == "ganado":
             print("Has ganado! Todos los barcos enemigos están hundidos.")
@@ -299,7 +314,13 @@ def jugar_partida():
             break
 
         # Turno del enemigo
+        print('\n' * 5)
         print("\nTurno del enemigo:")
+        print('\n' * 2)
+        print("TABLERO DEL JUGADOR")
+        print('\n' * 2)
+        tablero_jugador.mostrar()
+        time.sleep(1)
         estado = turno_enemigo(tablero_jugador)
         if estado == "perdido":
             print("Has perdido. El enemigo ha hundido todos tus barcos.")
@@ -334,24 +355,34 @@ def jugar_demo():
     print("Comienza la partida!\n")
 
     while jugando == True: #cuando jugando pase a ser false se acaba la partida
-        print("TABLERO DEL JUGADOR")
-        tablero_jugador.mostrar()
-        print("TABLERO DEL ENEMIGO")
-        tablero_enemigo.mostrar()
 
         # Turno del jugador
+        print('\n' * 2)
         print("\nTu turno:")
+        print('\n' * 2)
+        print("TABLERO DEL ENEMIGO")
+        print('\n' * 2)
+        tablero_enemigo.mostrar()
         estado = turno_jugador(tablero_enemigo)
         if estado == "ganado":
-            print("Has ganado! Todos los barcos enemigos están hundidos.")
+            print("🎉🚢✨ ¡VICTORIA! ¡EL MAR ES TUYO! ✨🚢🎉")
+            print("Todos los barcos enemigos están hundidos.")
+            print("⚓🏆 ¡HAS GANADO LA BATALLA NAVAL! 🏆⚓")
             jugando = False
             break
 
         # Turno del enemigo
+        print('\n' * 2)
         print("\nTurno del enemigo:")
+        print('\n' * 2)
+        print("TABLERO DEL JUGADOR")
+        print('\n' * 2)
+        tablero_jugador.mostrar()
         estado = turno_enemigo(tablero_jugador)
         if estado == "perdido":
+            print ("🌊💀💔 ¡DERROTA NAVAL! ¡TU FLOTA HA CAÍDO! 💔💀🌊")
             print("Has perdido. El enemigo ha hundido todos tus barcos.")
+            print("😭🕯️ ¡LA PRÓXIMA VEZ SERÁ TUYA! 🕯️😭")
             jugando = False
             break
 
