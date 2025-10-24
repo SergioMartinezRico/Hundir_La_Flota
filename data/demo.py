@@ -1,9 +1,10 @@
 import utils as ut
+import time
 print ("\n🚢🌊⚓️==================================================⚓️🌊🚢")
 print ("==================    HUNDIR LA FLOTA    ==================")
 print ("==================  ¡A LA BATALLA NAVAL! ⚔️  ==================")
 print ("🚢🌊⚓️==================================================⚓️🌊🚢\n")
-
+time.sleep(2)
 tipo_juego = input("¿Quiere jugar una partida o una demo? Introduzca Partida o Demo:  ")
 jugar = False
 while jugar == False:
