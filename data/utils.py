@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np   # type: ignore
 import random
 import time
 
@@ -334,7 +334,7 @@ def jugar_demo():
     se colocan las flotas
     se empieza a jugar
     """
-    flota = [4,3,2]
+    flota = [2,2]
 
     tablero_jugador = Tablero()
     tablero_enemigo = Tablero()
